@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Buscador Dragon Ball</title>
+  <link rel="stylesheet" href="ejercicio03.css">
+</head>
+<body>
+  <h2>API Dragon Ball</h2>
+  <form id="formPj">
+    <input type="number" id="idPj" placeholder="ID (Ejem. 1, 2...)" required />
+    <button type="submit">Buscar Personaje</button>
+  </form>
+
+  <div class="card" id="resultadoCard">
+    <h3 id="pjNombre"></h3>
+    <img id="pjImagen" src="" alt="Imagen personaje">
+    <p id="pjDesc"></p>
+  </div>
+
+  <script>
+    const formPj = document.getElementById("formPj");
+    const tarjeta = document.getElementById("resultadoCard");
+
+    formPj.addEventListener("submit", (event) => {
+      event.preventDefault();
+      obtenerPersonajeDB(document.getElementById("idPj").value);
+    });
+
+    async function obtenerPersonajeDB(id) {
+      const API_URL = `https://dragonball-api.com/api/characters/${id}`;
+
+      try {
+        const respuesta = await fetch(API_URL);
+
+        if (!respuesta.ok) {
+          if (respuesta.status == 404){
+            tarjeta.style.display = 'none';
+            alert('Personaje no encontrado');
+          }
+          throw new Error("No hay comunicación con el servidor");
+        }
+
+        const datos = await respuesta.json();
+
+        document.getElementById("pjNombre").innerText = datos.name;
+        document.getElementById("pjImagen").src = datos.image;
+        document.getElementById("pjDesc").innerText = datos.description;
+        
+        tarjeta.style.display = 'block';
+
+      } catch (e) {
+        console.error(`No se pudo concretar la operación: ${e}`);
+      }
+    }
+  </script>
+</body>
+</html>

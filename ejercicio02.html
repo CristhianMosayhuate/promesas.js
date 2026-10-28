@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Buscador de Naves</title>
+  <link rel="stylesheet" href="ejercicio02.css">
+</head>
+<body>
+  <form id="formNave">
+    <h2>Naves SWAPI</h2>
+    <div>
+      <input type="number" id="idNave" placeholder="Ingrese ID de nave (Ejem. 9)" required />
+      <button type="submit">Buscar</button>
+    </div>
+    <div><label>Nombre</label><input type="text" id="nombre" readonly /></div>
+    <div><label>Modelo</label><input type="text" id="modelo" readonly /></div>
+    <div><label>Fabricante</label><input type="text" id="fabricante" readonly /></div>
+    <div><label>Pasajeros</label><input type="text" id="pasajeros" readonly /></div>
+    <div><label>Largo (m)</label><input type="text" id="largo" readonly /></div>
+  </form>
+
+  <script>
+    const formNave = document.getElementById("formNave");
+    
+    formNave.addEventListener("submit", (event) => {
+      event.preventDefault();
+      obtenerNave(document.getElementById("idNave").value);
+    });
+
+    async function obtenerNave(id) {
+      const API_URL = `https://swapi.dev/api/starships/${id}/`;
+
+      try {
+        const respuesta = await fetch(API_URL);
+
+        if (!respuesta.ok) {
+          if (respuesta.status == 404){
+            document.getElementById("nombre").value = '';
+            document.getElementById("modelo").value = '';
+            document.getElementById("fabricante").value = '';
+            document.getElementById("pasajeros").value = '';
+            document.getElementById("largo").value = '';
+            alert('No existe una nave con ese ID');
+          }
+          throw new Error("Error de comunicación");
+        }
+
+        const datos = await respuesta.json();
+        
+        document.getElementById("nombre").value = datos.name;
+        document.getElementById("modelo").value = datos.model;
+        document.getElementById("fabricante").value = datos.manufacturer;
+        document.getElementById("pasajeros").value = datos.passengers;
+        document.getElementById("largo").value = datos.length;
+
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
